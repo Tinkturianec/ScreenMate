@@ -11,6 +11,7 @@ namespace ScreenMate
 		public readonly string Name;
 		public readonly Vector Shift;
 		public readonly int Timeout;
+		public readonly ActionType ActionType;
 
 		private readonly Image[] states;
 		private int current = 0;
@@ -27,6 +28,7 @@ namespace ScreenMate
 			var dy = conf.ContainsKey("dy") ? Int32.Parse(conf["dy"]) : 0;
 			Shift = new Vector(dx, dy);
 			Timeout = conf.ContainsKey("time") ? Int32.Parse(conf["time"]) : 150;
+			ActionType = conf.ContainsKey("type") ? (ActionType)ActionType.Parse(typeof(ActionType), conf["type"]) : ActionType.Default;
 		}
 
 		public bool HasStates

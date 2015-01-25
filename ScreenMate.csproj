@@ -35,6 +35,7 @@
     <Compile Include="SeriesCollection.cs" />
     <Compile Include="Series.cs" />
     <Compile Include="Vector.cs" />
+    <Compile Include="ActionType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xwt">
