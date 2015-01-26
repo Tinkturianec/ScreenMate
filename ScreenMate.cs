@@ -7,33 +7,33 @@ namespace ScreenMate
 {
 	public class ScreenMate
 	{
-		private readonly SeriesCollection SeriesCollection;
-		private readonly ImageView Viewer;
-		private readonly Window Window;
-		private IDisposable Timer;
+		private readonly SeriesCollection seriesCollection;
+		private readonly ImageView viewer;
+		private readonly Window window;
+		private IDisposable timer;
 
 		public ScreenMate ()
 		{	
-			SeriesCollection = new SeriesCollection();
-			if (!SeriesCollection.HasSeries) // TODO: message
+			seriesCollection = new SeriesCollection();
+			if (!seriesCollection.HasSeries)
 				HandleNotFoundSeries();
-			Viewer = new ImageView();
-			Window = new Window
+			viewer = new ImageView();
+			window = new Window
 			{
-				Content = Viewer,
+				Content = viewer,
 				Decorated = false,
 				Visible = false,
 				Resizable = false,
 				ShowInTaskbar = false,
 			};
-			Window.CloseRequested += HandleCloseRequested;
-			Window.Show();
+			window.CloseRequested += HandleCloseRequested;
+			window.Show();
 		}
 
 		public void Start()
 		{
-			CreateTrayIcon(SeriesCollection.Names);
-			Viewer.Image = SeriesCollection.CurrentState;
+			CreateTrayIcon(seriesCollection.Names);
+			viewer.Image = seriesCollection.CurrentState;
 		}
 
 		private void CreateTrayIcon(IEnumerable<string> names)
@@ -63,24 +63,24 @@ namespace ScreenMate
 
 		private void SetTimer ()
 		{
-			Timer = Application.TimeoutInvoke(SeriesCollection.Timeout, NextState);
+			timer = Application.TimeoutInvoke(seriesCollection.Timeout, NextState);
 		}
 
 		private void ChangeSeries()
 		{
-			Timer.Dispose();
+			timer.Dispose();
 			UpdateSeries();
 			SetTimer();
 		}
 
 		private void UpdateSeries()
 		{
-			Viewer.Image = SeriesCollection.CurrentState;
+			viewer.Image = seriesCollection.CurrentState;
 		}
 
 		private bool NextState()
 		{
-			SeriesCollection.Next();
+			seriesCollection.Next();
 			UpdateSeries();
 			return true;
 		}
@@ -100,7 +100,7 @@ namespace ScreenMate
 		private void HandleMenuClick (object sender, EventArgs e)
 		{
 			var item = (MenuItem)sender;
-			SeriesCollection.ChangeSeriesByName(item.Label);
+			seriesCollection.ChangeSeriesByName(item.Label);
 			ChangeSeries();
 		}
 

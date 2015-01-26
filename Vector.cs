@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ScreenMate
+﻿namespace ScreenMate
 {
 	public class Vector
 	{

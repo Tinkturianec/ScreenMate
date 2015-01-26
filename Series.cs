@@ -20,7 +20,7 @@ namespace ScreenMate
 		{
 			states = Directory.GetFiles(directory, "*.png")
 				.OrderBy(file => file)
-				.Select(file => Image.FromFile(file))
+				.Select(Image.FromFile)
 				.ToArray();
 			var conf = ParseConfigurationFile(directory);
 			Name = conf.ContainsKey("name") ? conf["name"] : Path.GetFileName(directory);
@@ -28,7 +28,7 @@ namespace ScreenMate
 			var dy = conf.ContainsKey("dy") ? Int32.Parse(conf["dy"]) : 0;
 			Shift = new Vector(dx, dy);
 			Timeout = conf.ContainsKey("time") ? Int32.Parse(conf["time"]) : 150;
-			ActionType = conf.ContainsKey("type") ? (ActionType)ActionType.Parse(typeof(ActionType), conf["type"]) : ActionType.Default;
+			ActionType = conf.ContainsKey("type") ? ParseActionType(conf["type"]) : ActionType.Default;
 		}
 
 		public bool HasStates
@@ -56,18 +56,16 @@ namespace ScreenMate
 		private static Dictionary<string, string> ParseConfigurationFile(string directory)
 		{
 			var configurationFile = Path.Combine(directory, "conf");
-			var result = new Dictionary<string, string> ();
-			if (File.Exists(configurationFile))
-			{
-				foreach (var line in File.ReadAllLines(configurationFile))
-				{
-					var parts = line.Split(new[]{'='}, 2, StringSplitOptions.RemoveEmptyEntries);
-					if (parts.Length < 2) continue;
-					parts[0] = parts[0].Trim().ToLower();
-					result[parts[0]] = parts[1].Trim();
-				}
-			}
-			return result;
+			if (!File.Exists(configurationFile)) return new Dictionary<string, string>();
+			return File.ReadAllLines(configurationFile)
+				.Select(line => line.Split(new[] {'='}, 2, StringSplitOptions.RemoveEmptyEntries))
+				.Where(parts => parts.Length >= 2)
+				.ToDictionary(strings => strings[0].Trim().ToLower(), strings => strings[1].Trim());
+		}
+
+		private static ActionType ParseActionType(string str)
+		{
+			return (ActionType) Enum.Parse(typeof (ActionType), str, true);
 		}
 	}
 }
